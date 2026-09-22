@@ -166,16 +166,16 @@ export default function Settings() {
         </div>
       </Card>
 
-      {/* Demo Workspace Data Management */}
+      {/* Workspace Cache Management */}
       <Card>
         <h3 className="mb-1 text-sm font-semibold text-slate-900 dark:text-slate-50">
-          Demo Workspace Data
+          Workspace Cache & Sync
         </h3>
         <p className="mb-4 text-xs text-slate-500 leading-relaxed">
-          TaskFlow stores your created tasks and projects in local browser storage so you can test full CRUD operations across refreshes. If you wish to reset all data back to the default seed dataset, click below.
+          TaskFlow caches your projects and tasks locally for instant navigation. If you ever need to clear your local cache and reload fresh records directly from the database, click below.
         </p>
         <Button variant="secondary" onClick={() => setResetConfirmOpen(true)}>
-          <RotateCcw className="h-4 w-4" /> Reset demo data
+          <RotateCcw className="h-4 w-4" /> Refresh from database
         </Button>
       </Card>
 
@@ -248,14 +248,14 @@ export default function Settings() {
         </form>
       </Modal>
 
-      {/* Reset Data Confirmation */}
+      {/* Refresh Data Confirmation */}
       <ConfirmModal
         open={resetConfirmOpen}
         onClose={() => setResetConfirmOpen(false)}
         onConfirm={handleResetData}
-        title="Reset demo data"
-        message="Are you sure you want to restore the default sample projects and tasks? Any custom items you created will be reset."
-        confirmLabel="Reset data"
+        title="Refresh workspace from database"
+        message="Are you sure you want to clear the local browser cache and reload fresh projects and tasks from the database?"
+        confirmLabel="Refresh data"
         confirmVariant="primary"
       />
 

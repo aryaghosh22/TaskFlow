@@ -1,28 +1,105 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { Bell, LogOut, Menu, Search, Settings, User, Sun, Moon, CheckCheck } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext'
 import { useTheme } from '../../context/ThemeContext'
+import { useAppData } from '../../context/AppContext'
 import { PAGE_TITLES } from '../../data/constants'
-import { NOTIFICATIONS } from '../../data/seed'
 import { formatDate } from '../../utils/format'
 import UserAvatar from '../UserAvatar'
 import Dropdown, { DropdownItem } from '../ui/Dropdown'
 
 export default function Navbar({ onMenuClick }) {
   const { user, logout } = useAuth()
+  const { tasks = [] } = useAppData()
   const { theme, toggleTheme } = useTheme()
   const location = useLocation()
   const navigate = useNavigate()
   const [query, setQuery] = useState('')
-  const [notifications, setNotifications] = useState(NOTIFICATIONS)
   const [notifOpen, setNotifOpen] = useState(false)
+  const [readNotifIds, setReadNotifIds] = useState(() => {
+    try {
+      const stored = localStorage.getItem(`taskflow_read_notifs_${user?.id || 'guest'}`)
+      return stored ? JSON.parse(stored) : []
+    } catch {
+      return []
+    }
+  })
 
-  const unreadCount = notifications.filter((n) => !n.read).length
+  const markRead = (id) => {
+    setReadNotifIds((prev) => {
+      const next = prev.includes(id) ? prev : [...prev, id]
+      try {
+        localStorage.setItem(`taskflow_read_notifs_${user?.id || 'guest'}`, JSON.stringify(next))
+      } catch {}
+      return next
+    })
+  }
 
   const markAllRead = () => {
-    setNotifications((prev) => prev.map((n) => ({ ...n, read: true })))
+    const allIds = notifications.map((n) => n.id)
+    setReadNotifIds(allIds)
+    try {
+      localStorage.setItem(`taskflow_read_notifs_${user?.id || 'guest'}`, JSON.stringify(allIds))
+    } catch {}
   }
+
+  const notifications = useMemo(() => {
+    if (!user || !tasks || tasks.length === 0) return []
+
+    const notifs = []
+    const now = new Date()
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime()
+
+    // Analyze incomplete tasks assigned to this user
+    const myTasks = tasks.filter(
+      (t) => t.assigneeId === user.id && t.status !== 'COMPLETED'
+    )
+
+    myTasks.forEach((t) => {
+      if (t.dueDate) {
+        const due = new Date(t.dueDate)
+        const dueDay = new Date(due.getFullYear(), due.getMonth(), due.getDate()).getTime()
+        const diffDays = Math.round((dueDay - today) / (1000 * 60 * 60 * 24))
+
+        if (diffDays < 0) {
+          notifs.push({
+            id: `overdue_${t.id}`,
+            title: 'Task Overdue',
+            message: `"${t.title}" was due on ${formatDate(t.dueDate)}`,
+            createdAt: t.dueDate,
+            read: readNotifIds.includes(`overdue_${t.id}`),
+            link: '/tasks',
+          })
+        } else if (diffDays <= 3) {
+          notifs.push({
+            id: `due_${t.id}`,
+            title: 'Deadline Approaching',
+            message: `"${t.title}" is due ${diffDays === 0 ? 'today' : `in ${diffDays} day${diffDays === 1 ? '' : 's'}`}`,
+            createdAt: t.createdAt || new Date().toISOString(),
+            read: readNotifIds.includes(`due_${t.id}`),
+            link: '/tasks',
+          })
+        }
+      }
+
+      // Incomplete assigned task
+      if (!notifs.some((n) => n.id.includes(t.id))) {
+        notifs.push({
+          id: `assigned_${t.id}`,
+          title: 'Active Task',
+          message: `You are assigned to "${t.title}"`,
+          createdAt: t.createdAt || new Date().toISOString(),
+          read: readNotifIds.includes(`assigned_${t.id}`),
+          link: '/tasks',
+        })
+      }
+    })
+
+    return notifs
+  }, [tasks, user, readNotifIds])
+
+  const unreadCount = notifications.filter((n) => !n.read).length
 
   const title =
     PAGE_TITLES[location.pathname] ||
@@ -122,30 +199,43 @@ export default function Navbar({ onMenuClick }) {
                 ) : null}
               </div>
 
-              <div className="divide-y divide-slate-100 dark:divide-slate-800 max-h-72 overflow-y-auto">
-                {notifications.map((n) => (
-                  <div
-                    key={n.id}
-                    onClick={() => {
-                      setNotifOpen(false)
-                      navigate(n.link)
-                    }}
-                    className={`p-2.5 hover:bg-slate-50 dark:hover:bg-slate-800/60 rounded-lg cursor-pointer transition-colors ${
-                      !n.read ? 'bg-slate-50/80 dark:bg-slate-800/40' : ''
-                    }`}
-                  >
-                    <div className="flex items-start justify-between gap-1">
-                      <p className="text-xs font-semibold text-slate-900 dark:text-slate-100">
-                        {n.title}
-                      </p>
-                      <span className="text-[10px] text-slate-400 whitespace-nowrap">
-                        {formatDate(n.createdAt)}
-                      </span>
+              {notifications.length === 0 ? (
+                <div className="py-8 px-4 text-center">
+                  <Bell className="mx-auto mb-2 h-7 w-7 text-slate-300 dark:text-slate-600 stroke-[1.5]" />
+                  <p className="text-xs font-semibold text-slate-700 dark:text-slate-200">
+                    No notifications
+                  </p>
+                  <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">
+                    You're all caught up!
+                  </p>
+                </div>
+              ) : (
+                <div className="divide-y divide-slate-100 dark:divide-slate-800 max-h-72 overflow-y-auto">
+                  {notifications.map((n) => (
+                    <div
+                      key={n.id}
+                      onClick={() => {
+                        markRead(n.id)
+                        setNotifOpen(false)
+                        navigate(n.link)
+                      }}
+                      className={`p-2.5 hover:bg-slate-50 dark:hover:bg-slate-800/60 rounded-lg cursor-pointer transition-colors ${
+                        !n.read ? 'bg-slate-50/80 dark:bg-slate-800/40' : ''
+                      }`}
+                    >
+                      <div className="flex items-start justify-between gap-1">
+                        <p className="text-xs font-semibold text-slate-900 dark:text-slate-100">
+                          {n.title}
+                        </p>
+                        <span className="text-[10px] text-slate-400 whitespace-nowrap">
+                          {formatDate(n.createdAt)}
+                        </span>
+                      </div>
+                      <p className="mt-0.5 text-xs text-slate-500 leading-relaxed">{n.message}</p>
                     </div>
-                    <p className="mt-0.5 text-xs text-slate-500 leading-relaxed">{n.message}</p>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
             </div>
           </>
         ) : null}

@@ -16,13 +16,6 @@ export default function Login() {
 
   if (isAuthenticated) return <Navigate to="/dashboard" replace />
 
-  const fillDemo = () => {
-    setEmail('arya.ghosh@taskflow.app')
-    setPassword('password123')
-    setErrors({})
-    setError('')
-  }
-
   const validate = () => {
     const next = {}
     if (!email.trim()) next.email = 'Email is required.'
@@ -53,20 +46,7 @@ export default function Login() {
           Enter your credentials to access your dashboard.
         </p>
 
-        {/* Demo Fast-Fill Banner */}
-        <div className="mb-5 rounded-lg border border-indigo-100 bg-indigo-50/70 p-3 dark:border-indigo-900/60 dark:bg-indigo-950/30 flex items-center justify-between">
-          <div className="text-xs text-indigo-900 dark:text-indigo-200">
-            <span className="font-semibold block">Demo credentials ready</span>
-            <span className="text-[11px] text-indigo-700 dark:text-indigo-300">arya.ghosh@taskflow.app</span>
-          </div>
-          <button
-            type="button"
-            onClick={fillDemo}
-            className="flex items-center gap-1 rounded-md bg-white px-2.5 py-1 text-xs font-semibold text-brand-700 shadow-2xs hover:bg-slate-50 dark:bg-slate-800 dark:text-indigo-300 dark:hover:bg-slate-700 transition-colors"
-          >
-            <Sparkles className="h-3 w-3" /> Quick fill
-          </button>
-        </div>
+
 
         <ErrorMessage message={error} className="mb-4" />
 
@@ -113,7 +93,6 @@ export default function Login() {
               />
               <span>Remember this device</span>
             </label>
-            <span className="text-slate-400">REST API ready</span>
           </div>
 
           <Button type="submit" className="w-full mt-2" loading={isSubmitting}>

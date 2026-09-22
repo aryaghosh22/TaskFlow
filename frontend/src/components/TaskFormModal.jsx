@@ -41,7 +41,7 @@ function TaskFormContent({
     return {
       title: '',
       description: '',
-      projectId: defaultProjectId || (projects[0]?.id ?? ''),
+      projectId: defaultProjectId || '',
       status: defaultStatus || 'TODO',
       priority: 'MEDIUM',
       assigneeId: '',

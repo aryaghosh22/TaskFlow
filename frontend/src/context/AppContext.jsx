@@ -1,5 +1,4 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
-import { PROJECTS, TASKS, USERS } from '../data/seed'
 import {
   getProjects as fetchProjectsApi,
   createProject as createProjectApi,
@@ -30,9 +29,9 @@ function readStorage(key, fallback) {
 
 export function AppProvider({ children }) {
   const { isAuthenticated, user } = useAuth()
-  const [projects, setProjects] = useState(() => readStorage(STORAGE_PROJECTS, PROJECTS))
-  const [tasks, setTasks] = useState(() => readStorage(STORAGE_TASKS, TASKS))
-  const [users, setUsers] = useState(USERS)
+  const [projects, setProjects] = useState(() => readStorage(STORAGE_PROJECTS, []))
+  const [tasks, setTasks] = useState(() => readStorage(STORAGE_TASKS, []))
+  const [users, setUsers] = useState([])
   const [isLoading, setIsLoading] = useState(false)
   const [isMutating, setIsMutating] = useState(false)
 
@@ -83,7 +82,7 @@ export function AppProvider({ children }) {
 
       if (usersRes.status === 'fulfilled' && usersRes.value?.data) {
         const list = usersRes.value.data.data || usersRes.value.data
-        if (Array.isArray(list) && list.length > 0) setUsers(list)
+        if (Array.isArray(list)) setUsers(list)
       }
     } catch (err) {
       console.warn('Backend synchronization warning, using local cache:', err)
@@ -94,7 +93,12 @@ export function AppProvider({ children }) {
 
   // Initial load when user authentication is confirmed
   useEffect(() => {
-    if (!isAuthenticated) return
+    if (!isAuthenticated) {
+      setProjects([])
+      setTasks([])
+      setUsers([])
+      return
+    }
 
     let ignore = false
     const sync = async () => {
@@ -119,7 +123,7 @@ export function AppProvider({ children }) {
 
         if (usersRes.status === 'fulfilled' && usersRes.value?.data) {
           const list = usersRes.value.data.data || usersRes.value.data
-          if (Array.isArray(list) && list.length > 0) setUsers(list)
+          if (Array.isArray(list)) setUsers(list)
         }
       } catch (err) {
         console.warn('Backend initial synchronization using local cache:', err)
@@ -262,8 +266,8 @@ export function AppProvider({ children }) {
   const resetData = useCallback(() => {
     localStorage.removeItem(STORAGE_PROJECTS)
     localStorage.removeItem(STORAGE_TASKS)
-    setProjects(PROJECTS)
-    setTasks(TASKS)
+    setProjects([])
+    setTasks([])
     refreshData()
   }, [refreshData])
 

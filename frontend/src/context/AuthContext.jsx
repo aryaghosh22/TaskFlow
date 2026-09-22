@@ -37,6 +37,8 @@ export function AuthProvider({ children }) {
     setUser(null)
     localStorage.removeItem(STORAGE_USER)
     localStorage.removeItem(STORAGE_TOKEN)
+    localStorage.removeItem('taskflow_projects')
+    localStorage.removeItem('taskflow_tasks')
   }, [])
 
   // Validate session on app launch if token exists
