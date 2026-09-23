@@ -6,6 +6,7 @@ import Button from '../components/ui/Button'
 import Input from '../components/ui/Input'
 import ErrorMessage from '../components/ui/ErrorMessage'
 import Logo from '../components/ui/Logo'
+import InteractiveMeshBackground from '../components/ui/InteractiveMeshBackground'
 
 const REQUIREMENTS = [
   { id: 'length', label: 'At least 8 characters', test: (value) => value.length >= 8 },
@@ -48,11 +49,12 @@ export default function Register() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4 py-10 dark:bg-slate-950">
-      <div className="w-full max-w-md rounded-xl border border-slate-200 bg-white p-8 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+    <InteractiveMeshBackground>
+      {/* Glassmorphic Card Container */}
+      <div className="w-full max-w-md rounded-2xl border border-slate-800/80 bg-slate-900/80 p-8 shadow-2xl shadow-indigo-950/50 backdrop-blur-xl ring-1 ring-white/10">
         <Logo size="lg" subtitle="Create your workspace" className="mb-6" />
-        <h1 className="text-xl font-semibold text-slate-900 dark:text-slate-50">Create account</h1>
-        <p className="mt-1 mb-6 text-sm text-slate-500">Start organizing projects and tasks.</p>
+        <h1 className="text-xl font-bold text-slate-100 tracking-tight">Create account</h1>
+        <p className="mt-1 mb-6 text-sm text-slate-400">Start organizing projects and tasks.</p>
         <ErrorMessage message={error} className="mb-4" />
         <form onSubmit={onSubmit} className="space-y-4">
           <Input
@@ -86,7 +88,7 @@ export default function Register() {
               <button
                 type="button"
                 onClick={() => setShowPassword((value) => !value)}
-                className="rounded p-1 text-slate-400"
+                className="rounded p-1 text-slate-400 hover:text-slate-200 transition-colors"
                 aria-label={showPassword ? 'Hide password' : 'Show password'}
               >
                 {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -95,7 +97,7 @@ export default function Register() {
           />
           <ul className="space-y-1 text-xs">
             {checks.map((rule) => (
-              <li key={rule.id} className={rule.ok ? 'text-emerald-700' : 'text-slate-500'}>
+              <li key={rule.id} className={rule.ok ? 'text-emerald-400' : 'text-slate-400'}>
                 {rule.ok ? '✓' : '•'} {rule.label}
               </li>
             ))}
@@ -112,7 +114,7 @@ export default function Register() {
               <button
                 type="button"
                 onClick={() => setShowConfirm((value) => !value)}
-                className="rounded p-1 text-slate-400"
+                className="rounded p-1 text-slate-400 hover:text-slate-200 transition-colors"
                 aria-label={showConfirm ? 'Hide password' : 'Show password'}
               >
                 {showConfirm ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -123,13 +125,13 @@ export default function Register() {
             {isSubmitting ? 'Creating account…' : 'Create account'}
           </Button>
         </form>
-        <p className="mt-6 text-center text-sm text-slate-500">
+        <p className="mt-6 text-center text-sm text-slate-400">
           Already have an account?{' '}
-          <Link to="/login" className="font-medium text-brand-700 hover:underline">
+          <Link to="/login" className="font-medium text-brand-400 hover:text-brand-300 hover:underline">
             Sign in
           </Link>
         </p>
       </div>
-    </div>
+    </InteractiveMeshBackground>
   )
 }
