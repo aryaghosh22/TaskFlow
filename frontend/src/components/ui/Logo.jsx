@@ -28,7 +28,7 @@ export default function Logo({
     <div className={`flex items-center gap-2.5 ${className}`}>
       {/* Brand Icon Image */}
       <img
-        src="/6fbcba73-aa0c-46e3-8cf9-66600c447abc.png"
+        src="/logo.png"
         alt="TaskFlow Logo"
         className={`${currentSize.img} shrink-0 object-contain drop-shadow-sm select-none`}
       />
