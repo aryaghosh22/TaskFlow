@@ -36,11 +36,6 @@ TaskFlow/
 ├── frontend/                     # React 19 + Vite frontend
 │   ├── src/
 │   │   ├── api/                  # Axios REST API service layer
-│   │   │   ├── client.js         # Centralized Axios instance with Bearer JWT interceptor
-│   │   │   ├── auth.js           # Auth service endpoints (login, register, me, logout)
-│   │   │   ├── projects.js       # Projects service endpoints
-│   │   │   ├── tasks.js          # Tasks service endpoints (query filtering & pagination)
-│   │   │   └── users.js          # Users and profile service endpoints
 │   │   ├── components/           # UI components, modals, Kanban board, tables
 │   │   ├── context/              # AuthContext, AppContext, ThemeContext, ToastContext
 │   │   ├── data/                 # Constants & fallback seed data
