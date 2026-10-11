@@ -55,39 +55,12 @@ TaskFlow/
 ├── backend/                      # Node.js + Express REST API
 │   ├── src/
 │   │   ├── config/
-│   │   │   ├── env.js            # Environment variable validation & defaults
-│   │   │   └── prisma.js         # Singleton Prisma client instance
 │   │   ├── controllers/
-│   │   │   ├── authController.js
-│   │   │   ├── projectController.js
-│   │   │   ├── taskController.js
-│   │   │   ├── userController.js
-│   │   │   └── dashboardController.js # Dedicated dashboard analytics controller
 │   │   ├── middleware/
-│   │   │   ├── authMiddleware.js     # JWT Bearer token authentication
-│   │   │   ├── errorMiddleware.js    # Centralized error handler (400, 401, 403, 404, 409, 422, 500)
-│   │   │   └── notFoundMiddleware.js # Standard 404 JSON response
 │   │   ├── routes/
-│   │   │   ├── authRoutes.js
-│   │   │   ├── projectRoutes.js
-│   │   │   ├── taskRoutes.js
-│   │   │   ├── userRoutes.js
-│   │   │   └── dashboardRoutes.js    # GET /api/dashboard
 │   │   ├── services/
-│   │   │   ├── authService.js
-│   │   │   ├── projectService.js
-│   │   │   ├── taskService.js
-│   │   │   ├── userService.js
-│   │   │   └── dashboardService.js
 │   │   ├── validators/
-│   │   │   ├── validate.js           # Zod schema validation middleware (422 status)
-│   │   │   ├── authValidator.js
-│   │   │   ├── projectValidator.js
-│   │   │   ├── taskValidator.js
-│   │   │   └── userValidator.js
 │   │   ├── utils/
-│   │   │   ├── apiError.js       # ApiError class with HTTP status code helpers
-│   │   │   └── jwt.js            # JWT signing and verification
 │   │   ├── app.js                # Express app configuration & middleware
 │   │   └── server.js             # Server startup & DB connectivity check
 │   ├── prisma/
